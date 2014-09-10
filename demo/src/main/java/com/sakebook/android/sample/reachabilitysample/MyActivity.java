@@ -1,21 +1,44 @@
 package com.sakebook.android.sample.reachabilitysample;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 import com.sakebook.android.library.reachability.Reachability;
 
-
 public class MyActivity extends Activity {
+
+    private Reachability mReachability;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-        Reachability reachability = new Reachability(this);
-        reachability.show();
+         mReachability = new Reachability(this);
+        mReachability.setBackImageResource(R.drawable.ic_launcher);
+//        mReachability.setBackColor(Color.YELLOW);
+        mReachability.makeFloatNavibar();
+
+        ((Button)findViewById(R.id.button)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mReachability.switching();
+            }
+        });
+        ((Button)findViewById(R.id.intent)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyActivity.this, DrawerActivity.class);
+                startActivity(intent);
+            }
+        });
+//        DrawerLayout
     }
 
 
