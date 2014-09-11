@@ -4,9 +4,11 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +30,7 @@ public class Reachability {
     private ViewGroup mRootView;
     private View mMoveView;
     private View mContentView;
-    private RelativeLayout mFloatRayout;
+    private FrameLayout mFloatRayout;
     private boolean mIsNear = false;
 
     private float startY;
@@ -46,17 +48,22 @@ public class Reachability {
         mRootView = ((ViewGroup)((Activity)mContext).getWindow().getDecorView());
         mContentView = mRootView.findViewById(android.R.id.content);
         mMoveView = mRootView.getChildAt(0);
-        mFloatRayout = new RelativeLayout(mContext);
-//        addView();
+        mFloatRayout = new FrameLayout(mContext);
     }
 
     public void makeFloatNavibar() {
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-//        mFloatRayout.setLayoutParams(params);
-        params.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        params.bottomMargin = 100;
-        mFloatRayout.addView(circleView(), params);
+
+        FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        frameParams.gravity = Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL;
+        frameParams.bottomMargin = 48;
+        mFloatRayout.setLayoutParams(frameParams);
+
+        FrameLayout.LayoutParams wrapParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        wrapParams.gravity = Gravity.CENTER;
+
+        mFloatRayout.addView(circleView(), wrapParams);
+        mFloatRayout.setBackgroundColor(Color.argb(0, 255, 255, 255));
+//        mFloatRayout.setBackgroundResource(R.drawable.button_selector);
         mRootView.addView(mFloatRayout);
     }
 
@@ -129,6 +136,12 @@ public class Reachability {
     }
 
     private void setListner() {
+        mContentView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
         mRootView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -150,8 +163,9 @@ public class Reachability {
 
     private View circleView() {
         ImageView view = new ImageView(mContext);
-        view.setFadingEdgeLength(50);
         view.setImageResource(R.drawable.ic_launcher);
+        view.setBackgroundResource(R.drawable.button_selector);
+        view.setPadding(8, 8, 8, 8);
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

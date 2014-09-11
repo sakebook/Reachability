@@ -22,17 +22,15 @@ public class MyActivity extends Activity {
         setContentView(R.layout.activity_my);
          mReachability = new Reachability(this);
         mReachability.setBackImageResource(R.drawable.ic_launcher);
-//        mReachability.setBackColor(Color.YELLOW);
-        mReachability.makeFloatNavibar();
         mReachability.canTouchableBackView(true);
 
-        ((Button)findViewById(R.id.button)).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mReachability.switching();
             }
         });
-        ((Button)findViewById(R.id.intent)).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.intent).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MyActivity.this, DrawerActivity.class);
