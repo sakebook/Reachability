@@ -24,6 +24,7 @@ public class MyActivity extends Activity {
         mReachability.setBackImageResource(R.drawable.ic_launcher);
 //        mReachability.setBackColor(Color.YELLOW);
         mReachability.makeFloatNavibar();
+        mReachability.canTouchableBackView(true);
 
         ((Button)findViewById(R.id.button)).setOnClickListener(new View.OnClickListener() {
             @Override

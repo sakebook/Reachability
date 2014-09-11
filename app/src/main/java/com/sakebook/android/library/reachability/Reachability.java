@@ -4,19 +4,20 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AccelerateInterpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
+import java.lang.reflect.Method;
 
 /**
  * Created by sakemotoshinya on 2014/09/10.
@@ -30,6 +31,13 @@ public class Reachability {
     private RelativeLayout mFloatRayout;
     private boolean mIsNear = false;
 
+    private float startY;
+    private float endY;
+
+    private final static String STATUS_BAR = "statusbar";
+    private final static String STATUS_BAR_NAME = "android.app.StatusBarManager";
+    private final static String STATUS_BAR_OPEN = "expandNotificationsPanel";
+
     public Reachability() {
     }
 
@@ -40,7 +48,6 @@ public class Reachability {
         mMoveView = mRootView.getChildAt(0);
         mFloatRayout = new RelativeLayout(mContext);
 //        addView();
-//        makeFloatNavibar();
     }
 
     public void makeFloatNavibar() {
@@ -51,19 +58,6 @@ public class Reachability {
         params.bottomMargin = 100;
         mFloatRayout.addView(circleView(), params);
         mRootView.addView(mFloatRayout);
-    }
-
-    private View circleView() {
-        ImageView view = new ImageView(mContext);
-        view.setFadingEdgeLength(50);
-        view.setImageResource(R.drawable.ic_launcher);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switching();
-            }
-        });
-        return view;
     }
 
     public void setBackImage(Drawable drawable) {
@@ -80,6 +74,24 @@ public class Reachability {
 
     public void setBackColor(int color) {
         mRootView.setBackgroundColor(color);
+    }
+
+    public void canTouchableBackView(boolean bool) {
+        if (bool) {
+            setListner();
+        } else {
+        }
+    }
+
+    public void showStatusBar() {
+        try {
+            Object service = mContext.getSystemService(STATUS_BAR);
+            Class clazz = Class.forName(STATUS_BAR_NAME);
+            Method method = clazz.getMethod(STATUS_BAR_OPEN);
+            method.invoke(service);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void switching() {
@@ -114,6 +126,39 @@ public class Reachability {
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.start();
         mIsNear = false;
+    }
+
+    private void setListner() {
+        mRootView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (MotionEvent.ACTION_DOWN == event.getAction()) {
+                    Log.d("touch", "down: "+event.getY());
+                    startY = event.getY();
+                } else if (MotionEvent.ACTION_UP == event.getAction()) {
+                    Log.d("touch", "up: "+event.getY());
+                    endY = event.getY();
+
+                    if ((endY - startY) > 50) {
+                        showStatusBar();
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
+    private View circleView() {
+        ImageView view = new ImageView(mContext);
+        view.setFadingEdgeLength(50);
+        view.setImageResource(R.drawable.ic_launcher);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switching();
+            }
+        });
+        return view;
     }
 
     private void addView() {
