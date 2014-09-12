@@ -122,24 +122,12 @@ public class Reachability {
     }
 
     public void switching() {
-        if (mIsNear) {
-            near();
-        } else {
-            far();
-        }
-    }
-
-    public void near() {
-        Toast.makeText(mContext, "near", Toast.LENGTH_SHORT).show();
         if (!mLock) {
-            fadeOut();
-        }
-    }
-
-    public void far() {
-        Toast.makeText(mContext, "far", Toast.LENGTH_SHORT).show();
-        if (!mLock) {
-            fadeIn();
+            if (mIsNear) {
+                push();
+            } else {
+                pull();
+            }
         }
     }
 
@@ -151,7 +139,7 @@ public class Reachability {
         return (size.y/5)*2;
     }
 
-    private void fadeIn() {
+    private void pull() {
         ValueAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", 0f, halfWindow);
         animator.setDuration(400);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -180,7 +168,7 @@ public class Reachability {
         mIsNear = true;
     }
 
-    private void fadeOut() {
+    private void push() {
         ValueAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", halfWindow, 0f);
         animator.setDuration(400);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
