@@ -79,8 +79,7 @@ public class NavigationDrawerFragment extends Fragment {
             mFromSavedInstanceState = true;
         }
         mReachability = new Reachability(getActivity());
-//        mReachability.setBackImageResource(R.drawable.ic_launcher);
-        mReachability.makeFloatNavibar();
+        mReachability.makeFloatNavibar(Reachability.Position.LEFT);
         mReachability.canTouchableBackView(false);
 
         // Select either the default item (0) or the last selected item.

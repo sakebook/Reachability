@@ -26,6 +26,10 @@ import java.lang.reflect.Method;
  */
 public class Reachability {
 
+    public enum Position {
+        LEFT, CENTER, RIGHT
+    }
+
     private Context mContext;
     private ViewGroup mRootView;
     private View mMoveView;
@@ -51,11 +55,20 @@ public class Reachability {
         mFloatRayout = new FrameLayout(mContext);
     }
 
-    public void makeFloatNavibar() {
+    public void makeFloatNavibar(Position position) {
+
+        int gravity;
+        if (Position.LEFT.equals(position)) {
+            gravity = Gravity.BOTTOM|Gravity.LEFT;
+        } else if (Position.RIGHT.equals(position)) {
+            gravity = Gravity.BOTTOM|Gravity.RIGHT;
+        } else {
+            gravity = Gravity.BOTTOM|Gravity.CENTER;
+        }
 
         FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        frameParams.gravity = Gravity.BOTTOM|Gravity.CENTER_HORIZONTAL;
-        frameParams.bottomMargin = 48;
+        frameParams.gravity = gravity;
+        frameParams.setMargins(48, 48, 48, 48);
         mFloatRayout.setLayoutParams(frameParams);
 
         FrameLayout.LayoutParams wrapParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);

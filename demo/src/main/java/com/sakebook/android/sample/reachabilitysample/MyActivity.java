@@ -20,7 +20,7 @@ public class MyActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
-         mReachability = new Reachability(this);
+        mReachability = new Reachability(this);
         mReachability.setBackImageResource(R.drawable.ic_launcher);
         mReachability.canTouchableBackView(true);
 
