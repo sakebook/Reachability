@@ -2,56 +2,46 @@ package com.sakebook.android.sample.reachabilitysample;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import com.sakebook.android.library.reachability.Reachability;
 
-public class MyActivity extends Activity {
+
+public class CustomAnimationActivity extends Activity {
 
     private Reachability mReachability;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my);
+        setContentView(R.layout.activity_custom_animation);
         mReachability = new Reachability(this);
-        mReachability.setBackImageResource(R.drawable.ic_launcher);
-        mReachability.canTouchableBackView(true);
+//        mReachability.canTouchableBackView(true);
+        mReachability.makeFloatNavibar(Reachability.Position.RIGHT);
 
-        findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.slide_in).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mReachability.switching();
+                mReachability.slideIn();
             }
         });
-        findViewById(R.id.intent).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.slide_out).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MyActivity.this, DrawerActivity.class);
-                startActivity(intent);
+                mReachability.slideOut();
             }
         });
-        findViewById(R.id.intent2).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MyActivity.this, CustomAnimationActivity.class);
-                startActivity(intent);
-            }
-        });
-//        DrawerLayout
+
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.my, menu);
+        getMenuInflater().inflate(R.menu.custom_animation, menu);
         return true;
     }
 

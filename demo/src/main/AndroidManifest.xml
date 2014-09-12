@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sakebook.android.sample.reachabilitysample" >
 
-    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR"/>
+    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
 
     <application
         android:allowBackup="true"
@@ -22,6 +22,10 @@
         <activity
             android:name=".DrawerActivity"
             android:label="@string/title_activity_drawer" >
+        </activity>
+        <activity
+            android:name=".CustomAnimationActivity"
+            android:label="@string/title_activity_custom_animation" >
         </activity>
     </application>
 

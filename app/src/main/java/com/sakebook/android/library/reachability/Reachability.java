@@ -17,11 +17,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AnticipateOvershootInterpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import java.lang.reflect.Method;
 
@@ -39,8 +39,12 @@ public class Reachability {
     private View mMoveView;
     private View mContentView;
     private FrameLayout mFloatRayout;
+    private ImageView mHoverView = null;
     private boolean mIsNear = false;
     private boolean mLock =false;
+
+    private ValueAnimator mInAnimator = null;
+    private ValueAnimator mOutAnimator = null;
 
     private float startY;
     private float endY;
@@ -49,9 +53,6 @@ public class Reachability {
     private final static String STATUS_BAR = "statusbar";
     private final static String STATUS_BAR_NAME = "android.app.StatusBarManager";
     private final static String STATUS_BAR_OPEN = "expandNotificationsPanel";
-
-    public Reachability() {
-    }
 
     public Reachability(Context context) {
         this.mContext = context;
@@ -75,15 +76,14 @@ public class Reachability {
 
         FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         frameParams.gravity = gravity;
-        frameParams.setMargins(48, 48, 48, 48);
         mFloatRayout.setLayoutParams(frameParams);
 
         FrameLayout.LayoutParams wrapParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         wrapParams.gravity = Gravity.CENTER;
+        wrapParams.setMargins(48, 48, 48, 48);
 
-        mFloatRayout.addView(circleView(), wrapParams);
+        mFloatRayout.addView(getHoverView(), wrapParams);
         mFloatRayout.setBackgroundColor(Color.argb(0, 255, 255, 255));
-//        mFloatRayout.setBackgroundResource(R.drawable.button_selector);
         mRootView.addView(mFloatRayout);
     }
 
@@ -140,7 +140,7 @@ public class Reachability {
     }
 
     private void pull() {
-        ValueAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", 0f, halfWindow);
+        ObjectAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", 0f, halfWindow);
         animator.setDuration(400);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.addListener(new Animator.AnimatorListener() {
@@ -169,7 +169,7 @@ public class Reachability {
     }
 
     private void push() {
-        ValueAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", halfWindow, 0f);
+        ObjectAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", halfWindow, 0f);
         animator.setDuration(400);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.addListener(new Animator.AnimatorListener() {
@@ -195,6 +195,86 @@ public class Reachability {
         });
         animator.start();
         mIsNear = false;
+    }
+
+    public void slideIn() {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(getHoverView(), "translationY", 300f, 0f);
+        animator.setDuration(500);
+        animator.setInterpolator(new AnticipateOvershootInterpolator());
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        animator.start();
+    }
+
+    public void slideOut() {
+        ObjectAnimator animator = ObjectAnimator.ofFloat(getHoverView(), "translationY", 0f, 300f);
+        animator.setDuration(500);
+        animator.setInterpolator(new AnticipateOvershootInterpolator());
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
+        animator.start();
+    }
+
+    public void setCustomSlideInAnimation(ValueAnimator animator) {
+        if (mInAnimator == null) {
+            mInAnimator = animator;
+            mInAnimator.setTarget(getHoverView());
+        }
+    }
+
+    public void setCustomSlideOutAnimation(ValueAnimator animator) {
+        if (mOutAnimator == null) {
+            mOutAnimator = animator;
+            mOutAnimator.setTarget(getHoverView());
+        }
+    }
+
+    public void customSlideIn() {
+        if (mInAnimator == null) {
+            Log.d("animation", "slide in is null");
+            return;
+        }
+        mInAnimator.start();
+    }
+
+    public void customSlideOut() {
+        if (mOutAnimator == null) {
+            Log.d("animation", "slide out is null");
+            return;
+        }
+        mOutAnimator.start();
     }
 
     private void setListner() {
@@ -223,18 +303,21 @@ public class Reachability {
         });
     }
 
-    private View circleView() {
-        ImageView view = new ImageView(mContext);
-        view.setImageResource(R.drawable.ic_launcher);
-        view.setBackgroundResource(R.drawable.button_selector);
-        view.setPadding(8, 8, 8, 8);
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switching();
-            }
-        });
-        return view;
+    private View getHoverView() {
+        if (mHoverView == null) {
+            mHoverView = new ImageView(mContext);
+            mHoverView.setImageResource(R.drawable.ic_launcher);
+            mHoverView.setBackgroundResource(R.drawable.button_selector);
+            // padding is space in layout image
+            mHoverView.setPadding(16, 16, 16, 16);
+            mHoverView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switching();
+                }
+            });
+        }
+        return mHoverView;
     }
 
     private void addView() {
