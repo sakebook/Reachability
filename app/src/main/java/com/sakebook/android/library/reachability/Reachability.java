@@ -1,17 +1,21 @@
 package com.sakebook.android.library.reachability;
 
+import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -36,9 +40,11 @@ public class Reachability {
     private View mContentView;
     private FrameLayout mFloatRayout;
     private boolean mIsNear = false;
+    private boolean mLock =false;
 
     private float startY;
     private float endY;
+    private float halfWindow;
 
     private final static String STATUS_BAR = "statusbar";
     private final static String STATUS_BAR_NAME = "android.app.StatusBarManager";
@@ -53,6 +59,7 @@ public class Reachability {
         mContentView = mRootView.findViewById(android.R.id.content);
         mMoveView = mRootView.getChildAt(0);
         mFloatRayout = new FrameLayout(mContext);
+        halfWindow = getHalfWindow();
     }
 
     public void makeFloatNavibar(Position position) {
@@ -124,26 +131,80 @@ public class Reachability {
 
     public void near() {
         Toast.makeText(mContext, "near", Toast.LENGTH_SHORT).show();
-        fadeOut();
+        if (!mLock) {
+            fadeOut();
+        }
     }
 
     public void far() {
         Toast.makeText(mContext, "far", Toast.LENGTH_SHORT).show();
-        fadeIn();
+        if (!mLock) {
+            fadeIn();
+        }
+    }
+
+    private float getHalfWindow() {
+        WindowManager wm = (WindowManager)mContext.getSystemService(mContext.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return (size.y/5)*2;
     }
 
     private void fadeIn() {
-        ValueAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", 0f, 500f);
+        ValueAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", 0f, halfWindow);
         animator.setDuration(400);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mLock = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mLock = false;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                mLock = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
         animator.start();
         mIsNear = true;
     }
 
     private void fadeOut() {
-        ValueAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", 500f, 0f);
+        ValueAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", halfWindow, 0f);
         animator.setDuration(400);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mLock = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mLock = false;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                mLock = false;
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+        });
         animator.start();
         mIsNear = false;
     }
