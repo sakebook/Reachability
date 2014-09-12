@@ -38,10 +38,12 @@ public class Reachability {
     private ViewGroup mRootView;
     private View mMoveView;
     private View mContentView;
-    private FrameLayout mFloatRayout;
+    private FrameLayout mFloatLayout;
     private ImageView mHoverView = null;
     private boolean mIsNear = false;
-    private boolean mLock =false;
+    private boolean mBackLock =false;
+    private boolean mIsShown = false;
+    private boolean mHoverLock =false;
 
     private ValueAnimator mInAnimator = null;
     private ValueAnimator mOutAnimator = null;
@@ -50,6 +52,7 @@ public class Reachability {
     private float endY;
     private float halfWindow;
 
+    private final static String TAG = "Reachability";
     private final static String STATUS_BAR = "statusbar";
     private final static String STATUS_BAR_NAME = "android.app.StatusBarManager";
     private final static String STATUS_BAR_OPEN = "expandNotificationsPanel";
@@ -59,11 +62,11 @@ public class Reachability {
         mRootView = ((ViewGroup)((Activity)mContext).getWindow().getDecorView());
         mContentView = mRootView.findViewById(android.R.id.content);
         mMoveView = mRootView.getChildAt(0);
-        mFloatRayout = new FrameLayout(mContext);
+        mFloatLayout = new FrameLayout(mContext);
         halfWindow = getHalfWindow();
     }
 
-    public void makeFloatNavibar(Position position) {
+    public void makeHoverView(Position position) {
 
         int gravity;
         if (Position.LEFT.equals(position)) {
@@ -76,15 +79,16 @@ public class Reachability {
 
         FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         frameParams.gravity = gravity;
-        mFloatRayout.setLayoutParams(frameParams);
+        mFloatLayout.setLayoutParams(frameParams);
 
         FrameLayout.LayoutParams wrapParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         wrapParams.gravity = Gravity.CENTER;
         wrapParams.setMargins(48, 48, 48, 48);
 
-        mFloatRayout.addView(getHoverView(), wrapParams);
-        mFloatRayout.setBackgroundColor(Color.argb(0, 255, 255, 255));
-        mRootView.addView(mFloatRayout);
+        mFloatLayout.addView(getHoverView(), wrapParams);
+        mFloatLayout.setBackgroundColor(Color.argb(0, 255, 255, 255));
+        mRootView.addView(mFloatLayout);
+        switchHover();
     }
 
     public void setBackImage(Drawable drawable) {
@@ -121,12 +125,32 @@ public class Reachability {
         }
     }
 
-    public void switching() {
-        if (!mLock) {
-            if (mIsNear) {
-                push();
+    public void switchBack() {
+        if (mBackLock) {
+            return;
+        }
+        if (mIsNear) {
+            push();
+        } else {
+            pull();
+        }
+    }
+
+    public void switchHover() {
+        if (mHoverLock) {
+            return;
+        }
+        if (isSetCustomAnimation()) {
+            if (mIsShown) {
+                customSlideOut();
             } else {
-                pull();
+                customSlideIn();
+            }
+        } else {
+            if (mIsShown) {
+                slideOut();
+            } else {
+                slideIn();
             }
         }
     }
@@ -146,17 +170,17 @@ public class Reachability {
         animator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-                mLock = true;
+                mBackLock = true;
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                mLock = false;
+                mBackLock = false;
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-                mLock = false;
+                mBackLock = false;
             }
 
             @Override
@@ -175,17 +199,17 @@ public class Reachability {
         animator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
-                mLock = true;
+                mBackLock = true;
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
-                mLock = false;
+                mBackLock = false;
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
-                mLock = false;
+                mBackLock = false;
             }
 
             @Override
@@ -197,21 +221,24 @@ public class Reachability {
         mIsNear = false;
     }
 
-    public void slideIn() {
+    private void slideIn() {
         ObjectAnimator animator = ObjectAnimator.ofFloat(getHoverView(), "translationY", 300f, 0f);
         animator.setDuration(500);
         animator.setInterpolator(new AnticipateOvershootInterpolator());
         animator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
+                mHoverLock = true;
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
+                mHoverLock = false;
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
+                mHoverLock = false;
             }
 
             @Override
@@ -220,23 +247,27 @@ public class Reachability {
             }
         });
         animator.start();
+        mIsShown = true;
     }
 
-    public void slideOut() {
+    private void slideOut() {
         ObjectAnimator animator = ObjectAnimator.ofFloat(getHoverView(), "translationY", 0f, 300f);
         animator.setDuration(500);
         animator.setInterpolator(new AnticipateOvershootInterpolator());
         animator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
+                mHoverLock = true;
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
+                mHoverLock = false;
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
+                mHoverLock = false;
             }
 
             @Override
@@ -245,12 +276,41 @@ public class Reachability {
             }
         });
         animator.start();
+        mIsShown = false;
+    }
+
+    private boolean isSetCustomAnimation() {
+        if (mInAnimator != null && mOutAnimator != null) {
+            return true;
+        }
+        Log.i(TAG, "Not set custom animation.");
+        return false;
     }
 
     public void setCustomSlideInAnimation(ValueAnimator animator) {
         if (mInAnimator == null) {
             mInAnimator = animator;
             mInAnimator.setTarget(getHoverView());
+            mInAnimator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    mHoverLock = true;
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mHoverLock = false;
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    mHoverLock = false;
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+                }
+            });
         }
     }
 
@@ -258,23 +318,45 @@ public class Reachability {
         if (mOutAnimator == null) {
             mOutAnimator = animator;
             mOutAnimator.setTarget(getHoverView());
+            mOutAnimator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    mHoverLock = true;
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mHoverLock = false;
+                }
+
+                @Override
+                public void onAnimationCancel(Animator animation) {
+                    mHoverLock = false;
+                }
+
+                @Override
+                public void onAnimationRepeat(Animator animation) {
+                }
+            });
         }
     }
 
-    public void customSlideIn() {
+    private void customSlideIn() {
         if (mInAnimator == null) {
-            Log.d("animation", "slide in is null");
+            Log.w(TAG, "Not set slide in animation");
             return;
         }
         mInAnimator.start();
+        mIsShown = true;
     }
 
-    public void customSlideOut() {
+    private void customSlideOut() {
         if (mOutAnimator == null) {
-            Log.d("animation", "slide out is null");
+            Log.w(TAG, "Not set slide out animation");
             return;
         }
         mOutAnimator.start();
+        mIsShown = false;
     }
 
     private void setListner() {
@@ -313,7 +395,7 @@ public class Reachability {
             mHoverView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    switching();
+                    switchBack();
                 }
             });
         }

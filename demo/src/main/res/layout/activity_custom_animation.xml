@@ -13,16 +13,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
     <Button
-        android:id="@+id/slide_in"
-        android:text="slideIn"
+        android:id="@+id/switch_hover"
+        android:text="switch hover"
         android:layout_below="@+id/text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <Button
-        android:id="@+id/slide_out"
-        android:text="slideOut"
-        android:layout_below="@+id/slide_in"
+        android:id="@+id/switch_back"
+        android:text="switch back"
+        android:layout_below="@+id/switch_hover"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

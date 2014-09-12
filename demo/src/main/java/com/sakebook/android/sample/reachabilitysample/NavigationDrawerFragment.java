@@ -4,6 +4,7 @@ package com.sakebook.android.sample.reachabilitysample;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.graphics.Color;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -79,7 +80,8 @@ public class NavigationDrawerFragment extends Fragment {
             mFromSavedInstanceState = true;
         }
         mReachability = new Reachability(getActivity());
-        mReachability.makeFloatNavibar(Reachability.Position.LEFT);
+        mReachability.makeHoverView(Reachability.Position.LEFT);
+        mReachability.setBackColor(Color.TRANSPARENT);
         mReachability.canTouchableBackView(false);
 
         // Select either the default item (0) or the last selected item.

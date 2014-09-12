@@ -2,13 +2,10 @@ package com.sakebook.android.sample.reachabilitysample;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
 import com.sakebook.android.library.reachability.Reachability;
 
@@ -27,7 +24,7 @@ public class MyActivity extends Activity {
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mReachability.switching();
+                mReachability.switchBack();
             }
         });
         findViewById(R.id.intent).setOnClickListener(new View.OnClickListener() {

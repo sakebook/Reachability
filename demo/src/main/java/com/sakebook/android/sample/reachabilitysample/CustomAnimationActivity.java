@@ -1,7 +1,6 @@
 package com.sakebook.android.sample.reachabilitysample;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,18 +19,18 @@ public class CustomAnimationActivity extends Activity {
         setContentView(R.layout.activity_custom_animation);
         mReachability = new Reachability(this);
 //        mReachability.canTouchableBackView(true);
-        mReachability.makeFloatNavibar(Reachability.Position.RIGHT);
+        mReachability.makeHoverView(Reachability.Position.RIGHT);
 
-        findViewById(R.id.slide_in).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.switch_hover).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mReachability.slideIn();
+                mReachability.switchHover();
             }
         });
-        findViewById(R.id.slide_out).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.switch_back).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mReachability.slideOut();
+                mReachability.switchBack();
             }
         });
 
