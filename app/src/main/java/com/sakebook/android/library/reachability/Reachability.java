@@ -17,11 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
-import android.view.animation.AnticipateOvershootInterpolator;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import java.lang.reflect.Method;
 
@@ -56,6 +53,8 @@ public class Reachability {
     private final static String STATUS_BAR = "statusbar";
     private final static String STATUS_BAR_NAME = "android.app.StatusBarManager";
     private final static String STATUS_BAR_OPEN = "expandNotificationsPanel";
+    private final static int DURATION_TIME = 400;
+    private final static int MARGIN = 48;
 
     public Reachability(Context context) {
         this.mContext = context;
@@ -83,7 +82,7 @@ public class Reachability {
 
         FrameLayout.LayoutParams wrapParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         wrapParams.gravity = Gravity.CENTER;
-        wrapParams.setMargins(48, 48, 48, 48);
+        wrapParams.setMargins(MARGIN, MARGIN, MARGIN, MARGIN);
 
         mFloatLayout.addView(getHoverView(), wrapParams);
         mFloatLayout.setBackgroundColor(Color.argb(0, 255, 255, 255));
@@ -156,7 +155,7 @@ public class Reachability {
     }
 
     private float getHalfWindow() {
-        WindowManager wm = (WindowManager)mContext.getSystemService(mContext.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -164,8 +163,9 @@ public class Reachability {
     }
 
     private void pull() {
+        ((ImageView)getHoverView()).setImageResource(android.R.drawable.ic_btn_speak_now);
         ObjectAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", 0f, halfWindow);
-        animator.setDuration(400);
+        animator.setDuration(DURATION_TIME);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.addListener(new Animator.AnimatorListener() {
             @Override
@@ -193,8 +193,9 @@ public class Reachability {
     }
 
     private void push() {
+        ((ImageView)getHoverView()).setImageResource(android.R.drawable.ic_dialog_dialer);
         ObjectAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", halfWindow, 0f);
-        animator.setDuration(400);
+        animator.setDuration(DURATION_TIME);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.addListener(new Animator.AnimatorListener() {
             @Override
@@ -223,8 +224,8 @@ public class Reachability {
 
     private void slideIn() {
         ObjectAnimator animator = ObjectAnimator.ofFloat(getHoverView(), "translationY", 300f, 0f);
-        animator.setDuration(500);
-        animator.setInterpolator(new AnticipateOvershootInterpolator());
+        animator.setDuration(DURATION_TIME);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -252,8 +253,8 @@ public class Reachability {
 
     private void slideOut() {
         ObjectAnimator animator = ObjectAnimator.ofFloat(getHoverView(), "translationY", 0f, 300f);
-        animator.setDuration(500);
-        animator.setInterpolator(new AnticipateOvershootInterpolator());
+        animator.setDuration(DURATION_TIME);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
         animator.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
@@ -398,10 +399,12 @@ public class Reachability {
     private View getHoverView() {
         if (mHoverView == null) {
             mHoverView = new ImageView(mContext);
-            mHoverView.setImageResource(R.drawable.ic_launcher);
+//            mHoverView.setImageResource(R.drawable.ic_launcher);
+            mHoverView.setImageResource(android.R.drawable.ic_dialog_dialer);
+            mHoverView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
             mHoverView.setBackgroundResource(R.drawable.button_selector);
             // padding is space in layout image
-            mHoverView.setPadding(16, 16, 16, 16);
+//            mHoverView.setPadding(16, 16, 16, 16);
             mHoverView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -410,22 +413,5 @@ public class Reachability {
             });
         }
         return mHoverView;
-    }
-
-    private void addView() {
-        FrameLayout frame = new FrameLayout(mContext);
-        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        frame.setLayoutParams(params);
-        frame.addView(new Button(mContext));
-
-        RelativeLayout relative = new RelativeLayout(mContext);
-        RelativeLayout.LayoutParams paramses = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        relative.setLayoutParams(paramses);
-        relative.addView(new Button(mContext));
-
-
-//        ((FrameLayout)mContentView).addView(frame);
-        mRootView.addView(frame);
-        mRootView.addView(relative);
     }
 }
