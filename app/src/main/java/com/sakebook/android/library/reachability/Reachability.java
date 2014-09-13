@@ -385,6 +385,16 @@ public class Reachability {
         });
     }
 
+    public void setHoverView(View view) {
+        mHoverView = (ImageView)view;
+        mHoverView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchBack();
+            }
+        });
+    }
+
     private View getHoverView() {
         if (mHoverView == null) {
             mHoverView = new ImageView(mContext);

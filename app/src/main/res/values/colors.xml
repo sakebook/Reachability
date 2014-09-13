@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="transparent">#00ffffff</color>
+    <color name="trans_black">#40ffffff</color>
+    <color name="button_shadow">#9e9e9e</color>
+    <color name="pressed_gray">#e0e0e0</color>
+    <color name="selected_gray">#fafafa</color>
+</resources>
