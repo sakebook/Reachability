@@ -18,7 +18,7 @@ public class MyActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
         mReachability = new Reachability(this);
-        mReachability.setBackImageResource(R.drawable.ic_launcher);
+        mReachability.setBackImageResource(R.drawable.tiles);
         mReachability.canTouchableBackView(true);
 
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {

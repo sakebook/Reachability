@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2014 ShinyaSakemoto <sakebook@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.sakebook.android.library.reachability;
 
 import android.animation.Animator;
@@ -8,8 +23,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -23,11 +36,11 @@ import android.widget.ImageView;
 
 import java.lang.reflect.Method;
 
-/**
- * Created by sakemotoshinya on 2014/09/10.
- */
 public class Reachability {
 
+    /**
+     * position of HoverView
+     * */
     public enum Position {
         LEFT, CENTER, RIGHT
     }
@@ -43,6 +56,8 @@ public class Reachability {
     private boolean mIsShown = false;
     private boolean mHoverLock =false;
     private boolean mHasCustomView = false;
+    private int mDrawablePull = 0;
+    private int mDrawablePush = 0;
 
     private ObjectAnimator mInAnimator = null;
     private ObjectAnimator mOutAnimator = null;
@@ -58,6 +73,10 @@ public class Reachability {
     private final static int DURATION_TIME = 400;
     private final static int MARGIN = 48;
 
+    /**
+     * Constructor
+     * @param context context
+     * */
     public Reachability(Context context) {
         this.mContext = context;
         mRootView = ((ViewGroup)((Activity)mContext).getWindow().getDecorView());
@@ -68,6 +87,54 @@ public class Reachability {
         initHoverView();
     }
 
+    private float getHalfWindow() {
+        WindowManager wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return (size.y/5)*2;
+    }
+
+    private void initHoverView() {
+        if (mHoverView == null) {
+            mHoverView = new ImageView(mContext);
+            mHoverView.setImageResource(R.drawable.back_pull);
+            mHoverView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+            mHoverView.setBackgroundResource(R.drawable.button_selector);
+            mHoverView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    switchBack();
+                }
+            });
+        }
+    }
+
+    /**
+     *<p> You can set custom HoverView only ImageView.<br>
+     *     If this method use, should call before makeHoverView</p>
+     * @param view ImageView
+     * @param pullResource pull image resource id
+     * @param pushResource push image resource id
+     * */
+    public void setHoverView(ImageView view, int pullResource, int pushResource) {
+        mHasCustomView = true;
+        mHoverView = view;
+        mDrawablePull = pullResource;
+        mDrawablePush = pushResource;
+        mHoverView.setImageResource(mDrawablePull);
+        mHoverView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchBack();
+            }
+        });
+    }
+
+    /**
+     * HoverView add to FloatLayout
+     * @param position LEFT, CENTER, RIGHT
+     * */
     public void makeHoverView(Position position) {
 
         int gravity;
@@ -93,29 +160,36 @@ public class Reachability {
         switchHover();
     }
 
-    public void setBackDrawable(Drawable drawable) {
-        if (Build.VERSION.SDK_INT > 15) {
-            mRootView.setBackground(drawable);
-        }else {
-            mRootView.setBackgroundDrawable(drawable);
-        }
-    }
-
+    /**
+     * Set image to RootView
+     * @param resourceId image resource id
+     * */
     public void setBackImageResource(int resourceId) {
         mRootView.setBackgroundResource(resourceId);
     }
 
+    /**
+     * Set color of RootView
+     * @param color color id
+     * */
     public void setBackColor(int color) {
         mRootView.setBackgroundColor(color);
     }
 
+    /**
+     * Can touch to RootView
+     * @param bool true: can touch. false: can't touch.
+     * */
     public void canTouchableBackView(boolean bool) {
         if (bool) {
-            setListner();
-        } else {
+            setListener();
         }
     }
 
+    /**
+     * <p>show status bar <br>
+     * requirement AndroidManifest.xml <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" /></p>
+     * */
     public void showStatusBar() {
         try {
             Object service = mContext.getSystemService(STATUS_BAR);
@@ -123,10 +197,15 @@ public class Reachability {
             Method method = clazz.getMethod(STATUS_BAR_OPEN);
             method.invoke(service);
         } catch (Exception e) {
+            Log.w(TAG, "Not permission. You write to uses-permission STATUS_BAR in manifest");
             e.printStackTrace();
         }
     }
 
+    /**
+     * <p>Move MoveView.<br>
+     *     Animation does not overlap.</p>
+     * */
     public void switchBack() {
         if (mBackLock) {
             return;
@@ -138,6 +217,10 @@ public class Reachability {
         }
     }
 
+    /**
+     * <p>Move HoverView.<br>
+     *     Animation does not overlap.</p>
+     * */
     public void switchHover() {
         if (mHoverLock) {
             return;
@@ -157,17 +240,19 @@ public class Reachability {
         }
     }
 
-    private float getHalfWindow() {
-        WindowManager wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        Point size = new Point();
-        display.getSize(size);
-        return (size.y/5)*2;
+    private boolean isSetCustomAnimation() {
+        if (mInAnimator != null && mOutAnimator != null) {
+            return true;
+        }
+        Log.i(TAG, "Not set custom animation.");
+        return false;
     }
 
     private void pull() {
-        if (!mHasCustomView) {
-            getHoverView().setImageResource(android.R.drawable.ic_btn_speak_now);
+        if (mHasCustomView && mDrawablePush != 0) {
+            getHoverView().setImageResource(mDrawablePush);
+        } else {
+            getHoverView().setImageResource(R.drawable.back_push);
         }
         ObjectAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", 0f, halfWindow);
         animator.setDuration(DURATION_TIME);
@@ -198,8 +283,10 @@ public class Reachability {
     }
 
     private void push() {
-        if (!mHasCustomView) {
-            getHoverView().setImageResource(android.R.drawable.ic_dialog_dialer);
+        if (mHasCustomView && mDrawablePull != 0) {
+            getHoverView().setImageResource(mDrawablePull);
+        } else {
+            getHoverView().setImageResource(R.drawable.back_pull);
         }
         ObjectAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", halfWindow, 0f);
         animator.setDuration(DURATION_TIME);
@@ -287,14 +374,14 @@ public class Reachability {
         mIsShown = false;
     }
 
-    private boolean isSetCustomAnimation() {
-        if (mInAnimator != null && mOutAnimator != null) {
-            return true;
-        }
-        Log.i(TAG, "Not set custom animation.");
-        return false;
-    }
 
+    /**
+     * <p>You can set custom animation to HoverView slide in.<br>
+     * It is not necessary to set the target of the animation  </p>
+     * @param duration Animation duration
+     * @param interpolator Animatoin interpolator
+     * @param holders PropertyValueHolder...
+     * */
     public void setCustomSlideInAnimation(int duration, TimeInterpolator interpolator, PropertyValuesHolder... holders) {
         if (mInAnimator == null) {
             mInAnimator = ObjectAnimator.ofPropertyValuesHolder(getHoverView(), holders);
@@ -323,6 +410,13 @@ public class Reachability {
         }
     }
 
+    /**
+     * <p>You can set custom animation to HoverView slide out.<br>
+     * It is not necessary to set the target of the animation  </p>
+     * @param duration Animation duration
+     * @param interpolator Animatoin interpolator
+     * @param holders PropertyValueHolder...
+     * */
     public void setCustomSlideOutAnimation(int duration, TimeInterpolator interpolator, PropertyValuesHolder... holders) {
         if (mOutAnimator == null) {
             mOutAnimator = ObjectAnimator.ofPropertyValuesHolder(getHoverView(), holders);
@@ -369,21 +463,19 @@ public class Reachability {
         mIsShown = false;
     }
 
-    private void setListner() {
+    private void setListener() {
         mContentView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                return true;
+                return true;//RootView unreachable
             }
         });
         mRootView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (MotionEvent.ACTION_DOWN == event.getAction()) {
-                    Log.d("touch", "down: "+event.getY());
                     startY = event.getY();
                 } else if (MotionEvent.ACTION_UP == event.getAction()) {
-                    Log.d("touch", "up: "+event.getY());
                     endY = event.getY();
 
                     if ((endY - startY) > 50) {
@@ -395,36 +487,10 @@ public class Reachability {
         });
     }
 
-    public void setHoverView(ImageView view) {
-        mHasCustomView = true;
-        mHoverView = view;
-        mHoverView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                switchBack();
-            }
-        });
-    }
-
-    public ImageView getHoverView() {
+    /**
+     * Getter of HoverView
+     * */
+    private ImageView getHoverView() {
         return this.mHoverView;
-    }
-
-    private void initHoverView() {
-        if (mHoverView == null) {
-            mHoverView = new ImageView(mContext);
-//            mHoverView.setImageResource(R.drawable.ic_launcher);
-            mHoverView.setImageResource(android.R.drawable.ic_dialog_dialer);
-            mHoverView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-            mHoverView.setBackgroundResource(R.drawable.button_selector);
-            // padding is space in layout image
-//            mHoverView.setPadding(16, 16, 16, 16);
-            mHoverView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    switchBack();
-                }
-            });
-        }
     }
 }

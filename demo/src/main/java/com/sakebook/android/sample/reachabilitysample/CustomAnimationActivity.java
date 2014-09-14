@@ -24,13 +24,14 @@ public class CustomAnimationActivity extends Activity {
         setContentView(R.layout.activity_custom_animation);
 
         ImageView view = new ImageView(this);
-        view.setPadding(16,16,16,16);
-        view.setImageResource(android.R.drawable.ic_media_play);
+        view.setBackgroundResource(R.drawable.custom_button_selector);
+        view.setScaleType(ImageView.ScaleType.CENTER);
 
         mReachability = new Reachability(this);
         mReachability.canTouchableBackView(true);
+        mReachability.setBackImageResource(R.drawable.tiles);
         // Should call before makeHoverView!
-        mReachability.setHoverView(view);
+        mReachability.setHoverView(view, android.R.drawable.ic_partial_secure, android.R.drawable.ic_secure);
         mReachability.makeHoverView(Reachability.Position.CENTER);
         mReachability.setCustomSlideInAnimation(1000, new AnticipateOvershootInterpolator(), fromLeftAnimation());
         mReachability.setCustomSlideOutAnimation(1000, new AnticipateOvershootInterpolator(), toRightAnimation());
@@ -46,14 +47,16 @@ public class CustomAnimationActivity extends Activity {
     private PropertyValuesHolder[] fromLeftAnimation() {
 
         PropertyValuesHolder holderX = PropertyValuesHolder.ofFloat( "translationX", -getWidth(), 0f );
-        PropertyValuesHolder[] holders = {holderX};
+        PropertyValuesHolder holderR = PropertyValuesHolder.ofFloat("rotation", 0f, 360f);
+        PropertyValuesHolder[] holders = {holderX, holderR};
         return holders;
     }
 
     private PropertyValuesHolder[] toRightAnimation() {
 
         PropertyValuesHolder holderX = PropertyValuesHolder.ofFloat( "translationX", 0f, getWidth() );
-        PropertyValuesHolder[] holders = {holderX};
+        PropertyValuesHolder holderR = PropertyValuesHolder.ofFloat("rotation", 0f, 360f);
+        PropertyValuesHolder[] holders = {holderX, holderR};
         return holders;
     }
 

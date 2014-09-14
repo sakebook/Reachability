@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android"><!--
+<item>
+    <shape
+        android:shape="ring"
+        android:innerRadiusRatio="0"
+        android:innerRadius="0dp"
+        android:thickness="124dp"
+        android:thicknessRatio="9.0"
+        android:useLevel="false" >
+
+        <gradient
+            android:type="radial"
+            android:gradientRadius="84"
+            android:centerX="0.5"
+            android:centerY="0.5"
+            android:endColor="@color/transparent"
+            android:centerColor="@android:color/black"
+            android:startColor="@color/trans_black"/>
+
+        <size
+            android:width="80dp"
+            android:height="80dp"/>
+
+    </shape>
+</item>
+<item>
+    <shape android:shape="ring"
+           android:innerRadiusRatio="0"
+           android:innerRadius="0dp"
+           android:thickness="32dp"
+           android:thicknessRatio="9.0"
+           android:useLevel="false" >
+
+        <solid android:color="@color/button_shadow" />
+        <padding android:bottom="2dp"/>
+        <stroke
+            android:color="@color/button_shadow"
+            android:width="1dp"/>
+
+        <size
+            android:width="72dp"
+            android:height="72dp"/>
+
+    </shape>
+</item>-->
+<item>
+    <shape android:shape="ring"
+           android:innerRadiusRatio="0"
+           android:innerRadius="0dp"
+           android:thickness="32dp"
+           android:thicknessRatio="9.0"
+           android:useLevel="false" >
+
+        <solid android:color="@color/pressed_gray" />
+
+        <stroke
+            android:width="10dp"
+            android:color="@android:color/black"
+            android:dashWidth="6dp"
+            android:dashGap="6dp"/>
+
+        <size
+            android:width="72dp"
+            android:height="72dp"/>
+
+    </shape>
+</item>
+</layer-list>
