@@ -24,6 +24,10 @@
             android:label="@string/title_activity_drawer" >
         </activity>
         <activity
+            android:name=".BackandHoverActivity"
+            android:label="@string/title_activity_back_and_hover" >
+        </activity>
+        <activity
             android:name=".CustomAnimationActivity"
             android:label="@string/title_activity_custom_animation" >
         </activity>

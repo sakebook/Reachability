@@ -27,21 +27,27 @@ public class MyActivity extends Activity {
                 mReachability.switchBack();
             }
         });
-        findViewById(R.id.intent).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.fragment).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MyActivity.this, DrawerActivity.class);
                 startActivity(intent);
             }
         });
-        findViewById(R.id.intent2).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.hover).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MyActivity.this, BackandHoverActivity.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.animation).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MyActivity.this, CustomAnimationActivity.class);
                 startActivity(intent);
             }
         });
-//        DrawerLayout
     }
 
 

@@ -2,7 +2,8 @@ package com.sakebook.android.library.reachability;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
+import android.animation.PropertyValuesHolder;
+import android.animation.TimeInterpolator;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -41,9 +42,10 @@ public class Reachability {
     private boolean mBackLock =false;
     private boolean mIsShown = false;
     private boolean mHoverLock =false;
+    private boolean mHasCustomView = false;
 
-    private ValueAnimator mInAnimator = null;
-    private ValueAnimator mOutAnimator = null;
+    private ObjectAnimator mInAnimator = null;
+    private ObjectAnimator mOutAnimator = null;
 
     private float startY;
     private float endY;
@@ -63,6 +65,7 @@ public class Reachability {
         mMoveView = mRootView.getChildAt(0);
         mFloatLayout = new FrameLayout(mContext);
         halfWindow = getHalfWindow();
+        initHoverView();
     }
 
     public void makeHoverView(Position position) {
@@ -76,12 +79,12 @@ public class Reachability {
             gravity = Gravity.BOTTOM|Gravity.CENTER;
         }
 
-        FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams frameParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT);
         frameParams.gravity = gravity;
         mFloatLayout.setLayoutParams(frameParams);
 
         FrameLayout.LayoutParams wrapParams = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-        wrapParams.gravity = Gravity.CENTER;
+        wrapParams.gravity = gravity;
         wrapParams.setMargins(MARGIN, MARGIN, MARGIN, MARGIN);
 
         mFloatLayout.addView(getHoverView(), wrapParams);
@@ -90,7 +93,7 @@ public class Reachability {
         switchHover();
     }
 
-    public void setBackImage(Drawable drawable) {
+    public void setBackDrawable(Drawable drawable) {
         if (Build.VERSION.SDK_INT > 15) {
             mRootView.setBackground(drawable);
         }else {
@@ -163,7 +166,9 @@ public class Reachability {
     }
 
     private void pull() {
-        ((ImageView)getHoverView()).setImageResource(android.R.drawable.ic_btn_speak_now);
+        if (!mHasCustomView) {
+            getHoverView().setImageResource(android.R.drawable.ic_btn_speak_now);
+        }
         ObjectAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", 0f, halfWindow);
         animator.setDuration(DURATION_TIME);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -193,7 +198,9 @@ public class Reachability {
     }
 
     private void push() {
-        ((ImageView)getHoverView()).setImageResource(android.R.drawable.ic_dialog_dialer);
+        if (!mHasCustomView) {
+            getHoverView().setImageResource(android.R.drawable.ic_dialog_dialer);
+        }
         ObjectAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", halfWindow, 0f);
         animator.setDuration(DURATION_TIME);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -288,10 +295,11 @@ public class Reachability {
         return false;
     }
 
-    public void setCustomSlideInAnimation(ValueAnimator animator) {
+    public void setCustomSlideInAnimation(int duration, TimeInterpolator interpolator, PropertyValuesHolder... holders) {
         if (mInAnimator == null) {
-            mInAnimator = animator;
-            mInAnimator.setTarget(getHoverView());
+            mInAnimator = ObjectAnimator.ofPropertyValuesHolder(getHoverView(), holders);
+            mInAnimator.setDuration(duration);
+            mInAnimator.setInterpolator(interpolator);
             mInAnimator.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
@@ -315,10 +323,11 @@ public class Reachability {
         }
     }
 
-    public void setCustomSlideOutAnimation(ValueAnimator animator) {
+    public void setCustomSlideOutAnimation(int duration, TimeInterpolator interpolator, PropertyValuesHolder... holders) {
         if (mOutAnimator == null) {
-            mOutAnimator = animator;
-            mOutAnimator.setTarget(getHoverView());
+            mOutAnimator = ObjectAnimator.ofPropertyValuesHolder(getHoverView(), holders);
+            mOutAnimator.setDuration(duration);
+            mOutAnimator.setInterpolator(interpolator);
             mOutAnimator.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
@@ -386,8 +395,9 @@ public class Reachability {
         });
     }
 
-    public void setHoverView(View view) {
-        mHoverView = (ImageView)view;
+    public void setHoverView(ImageView view) {
+        mHasCustomView = true;
+        mHoverView = view;
         mHoverView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -396,7 +406,11 @@ public class Reachability {
         });
     }
 
-    private View getHoverView() {
+    public ImageView getHoverView() {
+        return this.mHoverView;
+    }
+
+    private void initHoverView() {
         if (mHoverView == null) {
             mHoverView = new ImageView(mContext);
 //            mHoverView.setImageResource(R.drawable.ic_launcher);
@@ -412,6 +426,5 @@ public class Reachability {
                 }
             });
         }
-        return mHoverView;
     }
 }

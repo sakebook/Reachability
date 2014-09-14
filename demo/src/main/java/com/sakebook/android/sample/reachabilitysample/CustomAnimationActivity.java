@@ -1,10 +1,15 @@
 package com.sakebook.android.sample.reachabilitysample;
 
+import android.animation.PropertyValuesHolder;
 import android.app.Activity;
+import android.content.Context;
+import android.graphics.Point;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.animation.AnticipateOvershootInterpolator;
+import android.widget.ImageView;
 
 import com.sakebook.android.library.reachability.Reachability;
 
@@ -17,9 +22,18 @@ public class CustomAnimationActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_animation);
+
+        ImageView view = new ImageView(this);
+        view.setPadding(16,16,16,16);
+        view.setImageResource(android.R.drawable.ic_media_play);
+
         mReachability = new Reachability(this);
-//        mReachability.canTouchableBackView(true);
-        mReachability.makeHoverView(Reachability.Position.RIGHT);
+        mReachability.canTouchableBackView(true);
+        // Should call before makeHoverView!
+        mReachability.setHoverView(view);
+        mReachability.makeHoverView(Reachability.Position.CENTER);
+        mReachability.setCustomSlideInAnimation(1000, new AnticipateOvershootInterpolator(), fromLeftAnimation());
+        mReachability.setCustomSlideOutAnimation(1000, new AnticipateOvershootInterpolator(), toRightAnimation());
 
         findViewById(R.id.switch_hover).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -27,32 +41,27 @@ public class CustomAnimationActivity extends Activity {
                 mReachability.switchHover();
             }
         });
-        findViewById(R.id.switch_back).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mReachability.switchBack();
-            }
-        });
-
     }
 
+    private PropertyValuesHolder[] fromLeftAnimation() {
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.custom_animation, menu);
-        return true;
+        PropertyValuesHolder holderX = PropertyValuesHolder.ofFloat( "translationX", -getWidth(), 0f );
+        PropertyValuesHolder[] holders = {holderX};
+        return holders;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    private PropertyValuesHolder[] toRightAnimation() {
+
+        PropertyValuesHolder holderX = PropertyValuesHolder.ofFloat( "translationX", 0f, getWidth() );
+        PropertyValuesHolder[] holders = {holderX};
+        return holders;
+    }
+
+    private float getWidth() {
+        WindowManager wm = (WindowManager)getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return ((size.x/5)*3);
     }
 }

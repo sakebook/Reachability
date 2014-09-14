@@ -6,10 +6,9 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.sakebook.android.sample.reachabilitysample.CustomAnimationActivity">
+    tools:context="com.sakebook.android.sample.reachabilitysample.BackandHoverActivity">
 
     <TextView
-        android:id="@+id/text"
         android:text="@string/hello_world"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
@@ -20,6 +19,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-
+    <Button
+        android:id="@+id/switch_back"
+        android:text="switch back"
+        android:layout_below="@+id/switch_hover"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
 </RelativeLayout>

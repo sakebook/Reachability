@@ -22,16 +22,23 @@
         android:layout_height="wrap_content"/>
 
     <Button
-        android:id="@+id/intent"
-        android:text="next_activity"
+        android:id="@+id/fragment"
+        android:text="in fragment"
         android:layout_below="@+id/button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <Button
-        android:id="@+id/intent2"
-        android:text="custom_anim_activity"
-        android:layout_below="@+id/intent"
+        android:id="@+id/hover"
+        android:text="back and hover"
+        android:layout_below="@+id/fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/animation"
+        android:text="custom animation"
+        android:layout_below="@+id/hover"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
