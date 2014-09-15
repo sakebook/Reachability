@@ -51,16 +51,15 @@ public class Reachability {
     private View mContentView;
     private FrameLayout mFloatLayout;
     private ImageView mHoverView = null;
-    private boolean mIsNear = false;
-    private boolean mBackLock =false;
-    private boolean mIsShown = false;
-    private boolean mHoverLock =false;
     private boolean mHasCustomView = false;
     private int mDrawablePull = 0;
     private int mDrawablePush = 0;
 
     private ObjectAnimator mInAnimator = null;
     private ObjectAnimator mOutAnimator = null;
+
+    private BackAnimationListener mBackListener = null;
+    private HoverAnimationListener mHoverListener = null;
 
     private float startY;
     private float endY;
@@ -84,6 +83,8 @@ public class Reachability {
         mMoveView = mRootView.getChildAt(0);
         mFloatLayout = new FrameLayout(mContext);
         halfWindow = getHalfWindow();
+        mBackListener = new BackAnimationListener(false);
+        mHoverListener = new HoverAnimationListener(false);
         initHoverView();
     }
 
@@ -207,10 +208,10 @@ public class Reachability {
      *     Animation does not overlap.</p>
      * */
     public void switchBack() {
-        if (mBackLock) {
+        if (mBackListener.isLocked()) {
             return;
         }
-        if (mIsNear) {
+        if (mBackListener.isNear()) {
             push();
         } else {
             pull();
@@ -222,17 +223,17 @@ public class Reachability {
      *     Animation does not overlap.</p>
      * */
     public void switchHover() {
-        if (mHoverLock) {
+        if (mHoverListener.isLocked()) {
             return;
         }
         if (isSetCustomAnimation()) {
-            if (mIsShown) {
+            if (mHoverListener.isShown()) {
                 customSlideOut();
             } else {
                 customSlideIn();
             }
         } else {
-            if (mIsShown) {
+            if (mHoverListener.isShown()) {
                 slideOut();
             } else {
                 slideIn();
@@ -257,29 +258,9 @@ public class Reachability {
         ObjectAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", 0f, halfWindow);
         animator.setDuration(DURATION_TIME);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mBackLock = true;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mBackLock = false;
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                mBackLock = false;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
+        animator.addListener(mBackListener);
         animator.start();
-        mIsNear = true;
+        mBackListener.setDistanceStatus(true);
     }
 
     private void push() {
@@ -291,87 +272,27 @@ public class Reachability {
         ObjectAnimator animator = ObjectAnimator.ofFloat(mMoveView, "translationY", halfWindow, 0f);
         animator.setDuration(DURATION_TIME);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mBackLock = true;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mBackLock = false;
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                mBackLock = false;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
+        animator.addListener(mBackListener);
         animator.start();
-        mIsNear = false;
+        mBackListener.setDistanceStatus(false);
     }
 
     private void slideIn() {
         ObjectAnimator animator = ObjectAnimator.ofFloat(getHoverView(), "translationY", 300f, 0f);
         animator.setDuration(DURATION_TIME);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mHoverLock = true;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mHoverLock = false;
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                mHoverLock = false;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
+        animator.addListener(mHoverListener);
         animator.start();
-        mIsShown = true;
+        mHoverListener.setShowStatus(true);
     }
 
     private void slideOut() {
         ObjectAnimator animator = ObjectAnimator.ofFloat(getHoverView(), "translationY", 0f, 300f);
         animator.setDuration(DURATION_TIME);
         animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mHoverLock = true;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mHoverLock = false;
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                mHoverLock = false;
-            }
-
-            @Override
-            public void onAnimationRepeat(Animator animation) {
-
-            }
-        });
+        animator.addListener(mHoverListener);
         animator.start();
-        mIsShown = false;
+        mHoverListener.setShowStatus(false);
     }
 
 
@@ -387,26 +308,7 @@ public class Reachability {
             mInAnimator = ObjectAnimator.ofPropertyValuesHolder(getHoverView(), holders);
             mInAnimator.setDuration(duration);
             mInAnimator.setInterpolator(interpolator);
-            mInAnimator.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    mHoverLock = true;
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mHoverLock = false;
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    mHoverLock = false;
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-                }
-            });
+            mInAnimator.addListener(mHoverListener);
         }
     }
 
@@ -422,26 +324,7 @@ public class Reachability {
             mOutAnimator = ObjectAnimator.ofPropertyValuesHolder(getHoverView(), holders);
             mOutAnimator.setDuration(duration);
             mOutAnimator.setInterpolator(interpolator);
-            mOutAnimator.addListener(new Animator.AnimatorListener() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    mHoverLock = true;
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mHoverLock = false;
-                }
-
-                @Override
-                public void onAnimationCancel(Animator animation) {
-                    mHoverLock = false;
-                }
-
-                @Override
-                public void onAnimationRepeat(Animator animation) {
-                }
-            });
+            mOutAnimator.addListener(mHoverListener);
         }
     }
 
@@ -451,7 +334,7 @@ public class Reachability {
             return;
         }
         mInAnimator.start();
-        mIsShown = true;
+        mHoverListener.setShowStatus(true);
     }
 
     private void customSlideOut() {
@@ -460,7 +343,7 @@ public class Reachability {
             return;
         }
         mOutAnimator.start();
-        mIsShown = false;
+        mHoverListener.setShowStatus(false);
     }
 
     private void setListener() {
@@ -492,5 +375,87 @@ public class Reachability {
      * */
     private ImageView getHoverView() {
         return this.mHoverView;
+    }
+
+    private class BackAnimationListener implements Animator.AnimatorListener{
+
+        private boolean mBackLock;
+        private boolean mIsNear;
+
+        public BackAnimationListener(boolean backLock) {
+            this.mBackLock = backLock;
+        }
+        @Override
+        public void onAnimationStart(Animator animation) {
+            this.mBackLock = true;
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            this.mBackLock = false;
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+            this.mBackLock = false;
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+        }
+
+        public boolean isLocked() {
+            return this.mBackLock;
+        }
+
+        public void setDistanceStatus(boolean isNear) {
+            this.mIsNear = isNear;
+        }
+
+        public boolean isNear() {
+            return this.mIsNear;
+        }
+
+    }
+
+    private class HoverAnimationListener implements Animator.AnimatorListener{
+
+        private boolean mHoverLock;
+        private boolean mIsShown;
+
+        public HoverAnimationListener(boolean hoverLock) {
+            this.mHoverLock = hoverLock;
+        }
+
+        @Override
+        public void onAnimationStart(Animator animation) {
+            this.mHoverLock = true;
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            this.mHoverLock = false;
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+            this.mHoverLock = false;
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+        }
+
+        public boolean isLocked() {
+            return this.mHoverLock;
+        }
+
+        public void setShowStatus(boolean isShown) {
+            this.mIsShown = isShown;
+        }
+
+        public boolean isShown() {
+            return this.mIsShown;
+        }
     }
 }
