@@ -8,9 +8,10 @@ Like a iPhone 6 & 6 Plus.
 
 ## Usage
 Add dependencies
- * __Not yet!! Please wait a moment now.__
 
-~~compile 'com.github.sakebook:Reachability:0.0.1@aar'~~
+```
+compile 'com.github.sakebook:Reachability:0.0.1@aar'
+```
 
 In Activity `onCreate`
 
@@ -31,6 +32,7 @@ reachability.makeHoverView(Reachability.Position.RIGHT);
 
 ### Show status bar
  * `canTouchableBackView`
+  * if you call this method, You must write the AndroidManifest.xml the following code.
 
 ```AndroidManifest.xml
 ...
