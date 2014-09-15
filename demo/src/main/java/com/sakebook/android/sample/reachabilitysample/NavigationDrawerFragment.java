@@ -81,7 +81,7 @@ public class NavigationDrawerFragment extends Fragment {
         }
         mReachability = new Reachability(getActivity());
         mReachability.makeHoverView(Reachability.Position.LEFT);
-        mReachability.setBackColor(Color.TRANSPARENT);
+        mReachability.setBackColor(Color.BLACK);
         mReachability.canTouchableBackView(false);
 
         // Select either the default item (0) or the last selected item.
