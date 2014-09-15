@@ -3,6 +3,7 @@ Reachability on Android
 Easy access on top.  
 Like a iPhone 6 & 6 Plus.
 
+![image](https://raw.githubusercontent.com/sakebook/Reachability/master/images/demo.gif)
 ---
 
 ## Usage
