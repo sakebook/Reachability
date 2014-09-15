@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2014 ShinyaSakemoto <sakebook@gmail.com>
+ * Copyright (C) 2014 Shinya Sakemoto
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.sakebook.android.library.reachability;
 
-import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.animation.TimeInterpolator;
@@ -71,6 +70,7 @@ public class Reachability {
     private final static String STATUS_BAR_OPEN = "expandNotificationsPanel";
     private final static int DURATION_TIME = 400;
     private final static int MARGIN = 48;
+    private final static float THRESHOLD = 50f;
 
     /**
      * Constructor
@@ -361,7 +361,7 @@ public class Reachability {
                 } else if (MotionEvent.ACTION_UP == event.getAction()) {
                     endY = event.getY();
 
-                    if ((endY - startY) > 50) {
+                    if ((endY - startY) > THRESHOLD) {
                         showStatusBar();
                     }
                 }

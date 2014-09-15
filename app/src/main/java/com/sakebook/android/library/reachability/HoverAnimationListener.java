@@ -2,9 +2,6 @@ package com.sakebook.android.library.reachability;
 
 import android.animation.Animator;
 
-/**
- * Created by sakemotoshinya on 2014/09/15.
- */
 public class HoverAnimationListener implements Animator.AnimatorListener{
 
     private boolean mHoverLock;
