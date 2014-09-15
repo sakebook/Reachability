@@ -68,7 +68,7 @@ public class Reachability {
     private final static String STATUS_BAR = "statusbar";
     private final static String STATUS_BAR_NAME = "android.app.StatusBarManager";
     private final static String STATUS_BAR_OPEN = "expandNotificationsPanel";
-    private final static int DURATION_TIME = 400;
+    private final static int DURATION_TIME = 300;
     private final static int MARGIN = 48;
     private final static float THRESHOLD = 50f;
 
