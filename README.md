@@ -63,7 +63,7 @@ mReachability.setCustomSlideOutAnimation(1000, new AnticipateOvershootInterpolat
 
 Sample in project [demo](https://github.com/sakebook/Reachability/tree/master/demo)
 
-## LICENCE
+## LICENSE
 ```
 Copyright (C) 2014 Shinya Sakemoto
 
