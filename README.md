@@ -1,12 +1,12 @@
 Reachability on Android
 ============
 Easy access on top.  
-Like a iPhone 6.
+Like a iPhone 6 & 6 Plus.
 
 ---
 
 ## Usage
-add dependencies
+Add dependencies
  * __Not yet!! Please wait a moment now.__
 
 ~~compile 'com.github.sakebook:Reachability:0.0.1@aar'~~
@@ -19,8 +19,17 @@ reachability.makeHoverView(Reachability.Position.RIGHT);
 ```
 
 ## Option
+
+### Use own trigger  
+ * `switchBack`
+  * If you call this method, allows you to move the screen.
+  * Animation does not overlap.
+ * `switchHover`
+  * If you call this method, allows you to move the Hover.
+  * Animation does not overlap.
+
 ### Show status bar
- * canTouchableBackView
+ * `canTouchableBackView`
 
 ```AndroidManifest.xml
 ...
@@ -34,9 +43,9 @@ reachability.canTouchableBackView(true);
 
 ## Custom
 ### HoverView custom
- * setHoverView
- * setCustomSlideInAnimation
- * setCustomSlideOutAnimation
+ * `setHoverView`
+ * `setCustomSlideInAnimation`
+ * `setCustomSlideOutAnimation`
 
 ```
 // Make Own HoverView. Support only ImageView.
@@ -51,4 +60,22 @@ mReachability.makeHoverView(Reachability.Position.CENTER);
 mReachability.setCustomSlideInAnimation(1000, new AnticipateOvershootInterpolator(), fromLeftAnimation());
 mReachability.setCustomSlideOutAnimation(1000, new AnticipateOvershootInterpolator(), toRightAnimation());
 ```
+
 Sample in project [demo](https://github.com/sakebook/Reachability/tree/master/demo)
+
+## LICENCE
+```
+Copyright (C) 2014 Shinya Sakemoto
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
