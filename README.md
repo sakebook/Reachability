@@ -13,7 +13,7 @@ Like a iPhone 6 & 6 Plus.
 Add dependencies
 
 ```
-compile 'com.github.sakebook:Reachability:0.0.1@aar'
+compile 'com.github.sakebook:Reachability:0.1.0@aar'
 ```
 
 In Activity `onCreate`
