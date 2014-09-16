@@ -22,6 +22,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.os.Build;
 import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
@@ -68,6 +69,7 @@ public class Reachability {
     private final static String STATUS_BAR = "statusbar";
     private final static String STATUS_BAR_NAME = "android.app.StatusBarManager";
     private final static String STATUS_BAR_OPEN = "expandNotificationsPanel";
+    private final static String STATUS_BAR_OPEN_OLD = "expand";
     private final static int DURATION_TIME = 300;
     private final static int MARGIN = 48;
     private final static float THRESHOLD = 50f;
@@ -192,10 +194,14 @@ public class Reachability {
      * requirement AndroidManifest.xml <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" /></p>
      * */
     public void showStatusBar() {
+        String open = STATUS_BAR_OPEN;
+        if (Build.VERSION.SDK_INT < 17) {
+            open = STATUS_BAR_OPEN_OLD;
+        }
         try {
             Object service = mContext.getSystemService(STATUS_BAR);
             Class clazz = Class.forName(STATUS_BAR_NAME);
-            Method method = clazz.getMethod(STATUS_BAR_OPEN);
+            Method method = clazz.getMethod(open);
             method.invoke(service);
         } catch (Exception e) {
             Log.w(TAG, "Not permission. You write to uses-permission STATUS_BAR in manifest");
