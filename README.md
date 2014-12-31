@@ -1,3 +1,5 @@
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Reachability-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/1283)
+
 Reachability on Android
 ============
 Easy access on top.  
@@ -13,7 +15,7 @@ Like a iPhone 6 & 6 Plus.
 Add dependencies
 
 ```
-compile 'com.github.sakebook:Reachability:0.1.0@aar'
+compile 'com.github.sakebook:Reachability:0.2.0@aar'
 ```
 
 In Activity `onCreate`
