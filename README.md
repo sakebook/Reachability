@@ -14,13 +14,13 @@ Like a iPhone 6 & 6 Plus.
 ## Usage
 Add dependencies
 
-```
+```gradle
 compile 'com.github.sakebook:Reachability:0.2.0@aar'
 ```
 
 In Activity `onCreate`
 
-```
+```java
 Reachability reachability = new Reachability(this);
 reachability.makeHoverView(Reachability.Position.RIGHT);
 ```
@@ -39,13 +39,14 @@ reachability.makeHoverView(Reachability.Position.RIGHT);
  * `canTouchableBackView`
   * if you call this method, You must write the AndroidManifest.xml the following code.
 
-```AndroidManifest.xml
+```xml 
+<!-- AndroidManifest.xml -->
 ...
 <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
 ...
 ```
 
-```
+```java
 reachability.canTouchableBackView(true);
 ```
 
@@ -55,7 +56,7 @@ reachability.canTouchableBackView(true);
  * `setCustomSlideInAnimation`
  * `setCustomSlideOutAnimation`
 
-```
+```java
 // Make Own HoverView. Support only ImageView.
 ImageView view = new ImageView(this);
 view.setBackgroundResource(R.drawable.custom_button_selector);
